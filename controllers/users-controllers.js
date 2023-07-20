@@ -3,22 +3,13 @@ const HttpError = require("../models/http-error");
 const { validationResult } = require("express-validator");
 const User = require("../models/user");
 
-const users = [
-  {
-    id: "u1",
-    name: "John",
-    email: "john@gmail.com",
-    password: "test",
-  },
-];
-
 const getUsers = async (req, res, next) => {
   let users;
+
   try {
     users = await User.find({}, "-password");
   } catch (err) {
     const error = new HttpError("Failed to fetch users", 500);
-
     return next(error);
   }
 
@@ -30,24 +21,22 @@ const signup = async (req, res, next) => {
 
   if (!errors.isEmpty()) {
     const error = new HttpError("Invalid inputs", 422);
-
     return next(error);
   }
 
-  const { name, email, password, places } = req.body;
+  const { name, email, password } = req.body;
 
   let existingUser;
+
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError("Signing up failed", 500);
-
     return next(error);
   }
 
   if (existingUser) {
     const error = new HttpError("User already exists", 422);
-
     return next(error);
   }
 
@@ -57,14 +46,13 @@ const signup = async (req, res, next) => {
     image:
       "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=900&t=st=1689871928~exp=1689872528~hmac=4b7bf141bee22ba0c4853cf4289565d742200dc0ad3581b34910342e5b20c97b",
     password,
-    places,
+    places: [],
   });
 
   try {
     await createdUser.save();
   } catch (err) {
     const error = new HttpError("Signing up failed", 500);
-
     return next(error);
   }
 
@@ -75,17 +63,16 @@ const login = async (req, res, next) => {
   const { email, password } = req.body;
 
   let existingUser;
+
   try {
     existingUser = await User.findOne({ email: email });
   } catch (err) {
     const error = new HttpError("Logging in failed", 500);
-
     return next(error);
   }
 
   if (!existingUser || existingUser.password !== password) {
     const error = new HttpError("Incorrect email or password", 401);
-
     return next(error);
   }
 
