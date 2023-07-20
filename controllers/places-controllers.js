@@ -52,7 +52,7 @@ const getPlacesByUserId = (req, res, next) => {
 const createPlace = (req, res, next) => {
   const { title, description, coordinates, address, creator } = req.body;
   const createdPlace = {
-    id: uuid(),
+    id: uuid.v4(),
     title,
     description,
     location: coordinates,
