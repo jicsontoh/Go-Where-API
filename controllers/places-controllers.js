@@ -1,5 +1,6 @@
 const HttpError = require("../models/http-error");
 const uuid = require("uuid");
+const { validationResult } = require("express-validator");
 
 let places = [
   {
@@ -50,7 +51,14 @@ const getPlacesByUserId = (req, res, next) => {
 };
 
 const createPlace = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    throw new HttpError("Invalid inputs", 422);
+  }
+
   const { title, description, coordinates, address, creator } = req.body;
+
   const createdPlace = {
     id: uuid.v4(),
     title,
@@ -65,10 +73,16 @@ const createPlace = (req, res, next) => {
 };
 
 const updatePlace = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    throw new HttpError("Invalid inputs", 422);
+  }
+
   const { title, description } = req.body;
   const placeId = req.params.pid;
 
-  const updatedPlace = { ...places.find((p) => p === placeId) };
+  const updatedPlace = { ...places.find((p) => p.id === placeId) };
   const placeIdx = places.findIndex((p) => p.id === placeId);
 
   updatedPlace.title = title;
@@ -76,11 +90,14 @@ const updatePlace = (req, res, next) => {
 
   places[placeIdx] = updatedPlace;
 
-  res.status(200).json({ updatedPlace });
+  res.status(200).json({ places });
 };
 
 const deletePlace = (req, res, next) => {
   const placeId = req.params.pid;
+  if (!places.find((p) => p.id === placeId)) {
+    throw new HttpError("No such place", 404);
+  }
   places = places.filter((p) => p.id !== placeId);
 
   res.status(200).json({ message: "Successfully deleted place" });
