@@ -15,6 +15,7 @@ const fileUpload = multer({
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype];
+      console.log(uuid());
       cb(null, uuid() + "." + ext);
     },
   }),

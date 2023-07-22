@@ -1,5 +1,6 @@
 const HttpError = require("../models/http-error");
 const uuid = require("uuid");
+const fs = require("fs");
 const { validationResult } = require("express-validator");
 const Place = require("../models/place");
 const User = require("../models/user");
@@ -69,8 +70,7 @@ const createPlace = async (req, res, next) => {
     description,
     address,
     coordinates,
-    image:
-      "https://en.wikipedia.org/wiki/File:Marina_Bay_Sands_in_the_evening_-_20101120.jpg",
+    image: req.file.path,
     creatorId,
   });
 
@@ -162,6 +162,8 @@ const deletePlace = async (req, res, next) => {
     return next(error);
   }
 
+  const imagePath = place.image;
+
   try {
     const sess = await mongoose.startSession();
     sess.startTransaction();
@@ -176,6 +178,10 @@ const deletePlace = async (req, res, next) => {
     );
     return next(error);
   }
+
+  fs.unlink(imagePath, (err) => {
+    console.log(err);
+  });
 
   res.status(200).json({ message: "Successfully deleted place" });
 };
