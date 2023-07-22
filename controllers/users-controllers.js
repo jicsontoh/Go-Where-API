@@ -43,8 +43,7 @@ const signup = async (req, res, next) => {
   const createdUser = new User({
     name,
     email,
-    image:
-      "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?w=900&t=st=1689871928~exp=1689872528~hmac=4b7bf141bee22ba0c4853cf4289565d742200dc0ad3581b34910342e5b20c97b",
+    image: req.file.path,
     password,
     places: [],
   });
