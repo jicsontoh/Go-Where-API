@@ -4,12 +4,15 @@ const { check } = require("express-validator");
 const HttpError = require("../models/http-error");
 const placesControllers = require("../controllers/places-controllers");
 const fileUpload = require("../middle/file-upload");
+const checkAuth = require("../middle/check-auth");
 
 const router = express.Router();
 
 router.get("/:placeId", placesControllers.getPlacesById);
 
 router.get("/user/:userId", placesControllers.getPlacesByUserId);
+
+router.use(checkAuth);
 
 router.post(
   "/",
