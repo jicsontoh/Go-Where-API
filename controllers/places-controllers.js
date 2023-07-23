@@ -126,6 +126,11 @@ const updatePlace = async (req, res, next) => {
     return next(error);
   }
 
+  if (place.creatorId.toString() !== req.userData.userId) {
+    const error = new HttpError("Not allowed to edit place", 401);
+    return next(error);
+  }
+
   place.title = title;
   place.description = description;
 
@@ -159,6 +164,11 @@ const deletePlace = async (req, res, next) => {
 
   if (!place) {
     const error = new HttpError("No such place", 404);
+    return next(error);
+  }
+
+  if (place.creatorId.id !== req.userData.userId) {
+    const error = new HttpError("Not allowed to delete this place", 401);
     return next(error);
   }
 
